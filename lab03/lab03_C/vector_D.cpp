@@ -69,6 +69,7 @@ namespace Data_Types{
         vector.ar = nullptr;
     }
 
+
     Vector &Vector::operator =(const Vector &vector)
     {
         if(this != &vector){
@@ -82,6 +83,63 @@ namespace Data_Types{
 
         return *this;
     }
+
+    Vector &Vector::operator =(Vector &&vector)
+    {
+        if(&vector != this){
+            SZ = vector.SZ;
+            qsz = vector.qsz;
+            delete[] ar;
+            
+            vector.SZ = 0;
+            vector.qsz = 0;
+            vector.ar = nullptr;
+        }
+
+        return *this;
+    }
+
+    Vector &Vector::operator +=(int a)
+    {   
+        if(qsz == SZ){
+            int *old = ar;
+            //...
+            ar = new int[SZ];
+
+            int i;
+            int element = 0;
+
+            // Копирование старой части вектора
+            for(i = 0; i < qsz; i++)
+                ar[i] = old[i];
+            delete[] old;
+
+            // Добавление нового
+            ar[i++] = a;
+            qsz += 1;
+
+            SZ += QUOTA;
+            // Присваивание созданным элементам значения "value"
+            for(i ; i < SZ; i++)
+                ar[i] = element;
+        }else
+            ar[qsz++] = a;
+
+        return *this;
+    }
+    
+    const Vector Vector::operator +(const Vector &vector) const
+    {
+        int size = (qsz < vector.qsz) ? qsz : vector.qsz;
+
+        Vector new_vector(size);
+
+        for(int i = 0; i < size; i++)
+            new_vector.ar[i] = ar[i] + vector.ar[i];
+
+        return new_vector;
+    }
+
 
     Vector &Vector::setSize(int size)
     {
@@ -120,36 +178,6 @@ namespace Data_Types{
 
         return *this;
     }
-
-    std::istream &operator >>(std::istream &in, Vector &vector)
-    {
-        Vector tmp = vector;
-
-        for(int i = 0; i < vector.qsz; i++){
-            in >> vector.ar[i];
-            if(!in.good()){
-                in.clear();
-                in.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-
-                vector = tmp;
-                throw std::runtime_error("Invalid input");
-            }
-        }
-
-        return in;
-    }
-
-    const Vector Vector::operator +(const Vector &vector) const
-    {
-        int size = (qsz < vector.qsz) ? qsz : vector.qsz;
-
-        Vector new_vector(size);
-
-        for(int i = 0; i < size; i++)
-            new_vector.ar[i] = ar[i] + vector.ar[i];
-
-        return new_vector;
-    }
     
     Vector &Vector::copy(Vector &vector, int s_index, int len) const
     {
@@ -167,41 +195,10 @@ namespace Data_Types{
 
         vector.qsz = len;
 
-        for(int i = s_index; i < e_index; i ++){
+        for(int i = s_index; i < e_index; i ++)
             vector.ar[j++] = ar[i];
-            // j++;
-        }
 
         return vector;
-    }
-
-    Vector &Vector::operator +=(int a)
-    {   
-        if(qsz == SZ){
-            int *old = ar;
-            //...
-            ar = new int[SZ];
-
-            int i;
-            int element = 0;
-
-            // Копирование старой части вектора
-            for(i = 0; i < qsz; i++)
-                ar[i] = old[i];
-            delete[] old;
-
-            // Добавление нового
-            ar[i++] = a;
-            qsz += 1;
-
-            SZ += QUOTA;
-            // Присваивание созданным элементам значения "value"
-            for(i ; i < SZ; i++)
-                ar[i] = element;
-        }else
-            ar[qsz++] = a;
-
-        return *this;
     }
 
     Vector &Vector::sort()
@@ -227,6 +224,25 @@ namespace Data_Types{
         return max;
     }
 
+
+    std::istream &operator >>(std::istream &in, Vector &vector)
+    {
+        Vector tmp = vector;
+
+        for(int i = 0; i < vector.qsz; i++){
+            in >> vector.ar[i];
+            if(!in.good()){
+                in.clear();
+                in.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+                vector = tmp;
+                throw std::runtime_error("Invalid input");
+            }
+        }
+
+        return in;
+    }
+
     std::ostream &operator <<(std::ostream &out, const Vector &vector)
     {   
         int i = 0;
@@ -239,6 +255,7 @@ namespace Data_Types{
         
         return out;
     }
+
 
     void Vector::swap(int &a, int &b)
     {

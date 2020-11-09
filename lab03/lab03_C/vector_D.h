@@ -44,12 +44,11 @@ namespace Data_Types{
             ~Vector(){ delete[] ar; }
 
             Vector &operator =(const Vector &); // Оператор присваивания копированием
-            Vector &operator =(const Vector &&); // Оператор присваивания перемещением
+            Vector &operator =(Vector &&); // Оператор присваивания перемещением
             Vector &operator +=(int );
       const Vector operator +(const Vector &) const;
 
             Vector &setSize(int );
-            Vector &input();
             Vector &copy(Vector &, int, int) const;
             Vector &sort();
             int max() const;
