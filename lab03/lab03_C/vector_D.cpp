@@ -104,6 +104,7 @@ namespace Data_Types{
         if(qsz == SZ){
             int *old = ar;
             //...
+            SZ += QUOTA;
             ar = new int[SZ];
 
             int i;
@@ -118,7 +119,7 @@ namespace Data_Types{
             ar[i++] = a;
             qsz += 1;
 
-            SZ += QUOTA;
+            // SZ += QUOTA;
             // Присваивание созданным элементам значения "value"
             for(i ; i < SZ; i++)
                 ar[i] = element;
